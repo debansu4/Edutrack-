@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edutrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Poppins:wght@400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            text-align: center;
+            background: linear-gradient(120deg, #2E3192, #1BFFFF);
+            color: white;
+            transition: 0.3s;
+        }
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        header {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: auto;
+            padding: 0 15px;
+        }
+        #logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 30px;
+            font-weight: bold;
+        }
+         .menu-container {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        .menu-dropdown {
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            flex-direction: column;
+        }
+        .menu-dropdown button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            padding: 5px 0;
+            cursor: pointer;
+        }
+        main {
+            padding: 50px;
+        }
+        .dark-mode {
+            background: linear-gradient(120deg, #000428, #004e92);
+            color: white;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            margin: 20px auto;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        .logout-btn {
+            color: red;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 3.5rem;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 150px;
+        }
+        #subject-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 15px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            justify-content: center;
+            scroll-behavior: smooth;
+        }
+        #subject-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .subject {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            flex-shrink: 0;
+        }
+        .subject:hover {
+            transform: scale(1.1);
+            background: yellow;
+        }
+        .menu {
+            display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .menu button {
+            display: block;
+            width: 100%;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+        }
+        #threeDots {
+            cursor: pointer;
+            font-size: 24px;
+            background: none;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div id="logo">Edutrack</div>
+            <div class="menu-container" onclick="toggleMenu()">
+                &#x22EE;
+                <div class="menu-dropdown" id="menuDropdown">
+                    <button id="signInBtn">🔑 Sign In</button>
+                    <button id="logOutBtn" class="logout-btn" style="display: none;">🚪 Log Out</button>
+                    <button id="darkModeBtn">🌙 Dark Mode</button>
+                    <button id="lightModeBtn" style="display: none;">🌞 Light Mode</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+ <div id="formContainer" class="form-container" style="display: none;">
+        <button class="back-btn" onclick="hideForm()">←</button>
+        <h3 id="formTitle">Sign In</h3>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button id="authBtn">Login</button>
+        <p id="toggleForm">Don't have an account? <span style="cursor:pointer; color:yellow;" id="switchToSignUp">Sign Up</span></p>
+    </div>
+
+    </div>
+
+    <!-- Scrollable Subject Icons -->
+    <div id="subject-scroll">
+        <div class="subject">📘</div>
+        <div class="subject">🧪</div>
+        <div class="subject">🧬</div>
+        <div class="subject">📐</div>
+        <div class="subject">📖</div>
+        <div class="subject">🔡</div>
+    </div>
+<script>// UI Elements
+const signInBtn = document.getElementById("signInBtn");
+const logOutBtn = document.getElementById("logOutBtn");
+const formContainer = document.getElementById("formContainer");
+const authBtn = document.getElementById("authBtn");
+const toggleForm = document.getElementById("toggleForm");
+const formTitle = document.getElementById("formTitle");
+const darkModeBtn = document.getElementById("darkModeBtn");
+const lightModeBtn = document.getElementById("lightModeBtn");
+const menuDropdown = document.getElementById("menuDropdown");
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+const threeDots = document.querySelector(".menu-container"); // ID নেই, তাই class ধরে ধরছি
+
+let isSignUp = false;
+
+// Show & Hide Form
+function showForm() {
+    formContainer.style.display = "block";
+}
+
+function hideForm() {
+    formContainer.style.display = "none";
+}
+
+// Update UI based on login status
+function updateUI() {
+    const loggedInUser = localStorage.getItem("loggedInUser");
+    if (loggedInUser) {
+        signInBtn.style.display = "none";
+        logOutBtn.style.display = "block";
+    } else {
+        signInBtn.style.display = "block";
+        logOutBtn.style.display = "none";
+    }
+}
+
+// Toggle Menu Dropdown
+function toggleMenu() {
+    if (menuDropdown.style.display === "flex") {
+        menuDropdown.style.display = "none";
+    } else {
+        menuDropdown.style.display = "flex";
+    }
+}
+
+// Sign In / Sign Up System
+authBtn.addEventListener("click", function () {
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (username === "" || password === "") {
+        alert("Please fill in all fields!");
+        return;
+    }
+
+    if (isSignUp) {
+        localStorage.setItem(username, JSON.stringify({ password }));
+        alert("Account Created! Please Sign In.");
+    } else {
+        const storedUser = JSON.parse(localStorage.getItem(username));
+        if (storedUser && storedUser.password === password) {
+            localStorage.setItem("loggedInUser", username);
+            updateUI();
+        } else {
+            alert("Invalid Credentials");
+        }
+    }
+    hideForm();
+});
+
+// Switch Between Sign In & Sign Up
+toggleForm.addEventListener("click", function () {
+    isSignUp = !isSignUp;
+    formTitle.innerText = isSignUp ? "Sign Up" : "Sign In";
+    toggleForm.innerHTML = isSignUp
+        ? 'Already have an account? <span style="cursor:pointer; color:yellow;" id="switchToSignIn">Sign In</span>'
+        : 'Don\'t have an account? <span style="cursor:pointer; color:yellow;" id="switchToSignUp">Sign Up</span>';
+    authBtn.innerText = isSignUp ? "Register" : "Login";
+});
+
+// Logout
+logOutBtn.addEventListener("click", function () {
+    localStorage.removeItem("loggedInUser");
+    updateUI();
+});
+
+// Dark & Light Mode Toggle
+function enableDarkMode() {
+    document.body.classList.add("dark-mode");
+    localStorage.setItem("theme", "dark");
+    darkModeBtn.style.display = "none";
+    lightModeBtn.style.display = "block";
+}
+
+function enableLightMode() {
+    document.body.classList.remove("dark-mode");
+    localStorage.setItem("theme", "light");
+    darkModeBtn.style.display = "block";
+    lightModeBtn.style.display = "none";
+}
+
+// Apply saved theme
+if (localStorage.getItem("theme") === "dark") {
+    enableDarkMode();
+} else {
+    enableLightMode();
+}
+
+darkModeBtn.addEventListener("click", enableDarkMode);
+lightModeBtn.addEventListener("click", enableLightMode);
+
+// 3 Dots Menu Toggle
+threeDots.addEventListener("click", toggleMenu);
+
+// Menu Hide when clicking outside
+document.addEventListener("click", (e) => {
+    if (!threeDots.contains(e.target) && !menuDropdown.contains(e.target)) {
+        menuDropdown.style.display = "none";
+    }
+});
+
+updateUI();
+    </script>
+
+</body>
+</html>
